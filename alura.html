@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Objetivos do Ano</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121214;
+            color: white;
+            font-family: 'Inter', sans-serif;
+        }
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .tab-active {
+            border-bottom: 4px solid #4ade80;
+            background-color: #27272a;
+        }
+        .glass-card {
+            background-color: #1e1e26;
+            border: 1px solid #2d2d35;
+        }
+        .green-text {
+            color: #4ade80;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="w-full max-w-3xl">
+        <h1 class="text-3xl font-bold mb-8 text-left">Meus Objetivos do ano<span class="green-text">_</span></h1>
+
+        <div class="glass-card rounded-3xl overflow-hidden shadow-2xl">
+            <!-- Navegação de Abas -->
+            <div class="flex flex-wrap border-b border-gray-700 bg-[#2d2d35]">
+                <button onclick="changeTab(0)" id="btn-0" class="flex-1 py-4 px-2 text-sm font-medium transition-all hover:bg-gray-700 tab-active">
+                    Meu Aniversário
+                </button>
+                <button onclick="changeTab(1)" id="btn-1" class="flex-1 py-4 px-2 text-sm font-medium transition-all hover:bg-gray-700">
+                    Natal
+                </button>
+                <button onclick="changeTab(2)" id="btn-2" class="flex-1 py-4 px-2 text-sm font-medium transition-all hover:bg-gray-700">
+                    Ano Novo
+                </button>
+                <button onclick="changeTab(3)" id="btn-3" class="flex-1 py-4 px-2 text-sm font-medium transition-all hover:bg-gray-700">
+                    Minhas Férias
+                </button>
+            </div>
+
+            <!-- Conteúdo do Cronômetro -->
+            <div class="p-8 md:p-12 text-center">
+                <h2 id="event-title" class="text-2xl md:text-3xl font-bold mb-6">
+                    Carregando objetivo...
+                </h2>
+                
+                <p class="green-text text-xs font-bold tracking-widest uppercase mb-8">
+                    Tempo para completar o objetivo
+                </p>
+
+                <div class="grid grid-cols-4 gap-4 md:gap-8 max-w-lg mx-auto">
+                    <div class="flex flex-col">
+                        <span id="days" class="text-4xl md:text-6xl font-medium mono mb-2">000</span>
+                        <span class="green-text text-sm md:text-base">dias</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span id="hours" class="text-4xl md:text-6xl font-medium mono mb-2">00</span>
+                        <span class="green-text text-sm md:text-base">horas</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span id="minutes" class="text-4xl md:text-6xl font-medium mono mb-2">00</span>
+                        <span class="green-text text-sm md:text-base">min</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span id="seconds" class="text-4xl md:text-6xl font-medium mono mb-2">00</span>
+                        <span class="green-text text-sm md:text-base">seg</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuração dos eventos (Datas no formato YYYY-MM-DD)
+        const events = [
+            {
+                title: "Comemorar meu aniversário com amigos e família",
+                date: new Date(new Date().getFullYear(), 10, 15) // Ex: 15 de Novembro
+            },
+            {
+                title: "Estar com tudo pronto para a ceia de Natal",
+                date: new Date(new Date().getFullYear(), 11, 25) // 25 de Dezembro
+            },
+            {
+                title: "Virada de ano e metas para 2027",
+                date: new Date(new Date().getFullYear() + 1, 0, 1) // 1 de Janeiro do próximo ano
+            },
+            {
+                title: "Aproveitar as férias merecidas",
+                date: new Date(new Date().getFullYear(), 6, 10) // 10 de Julho
+            }
+        ];
+
+        let currentTabIndex = 0;
+        let timerInterval;
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            let targetDate = events[currentTabIndex].date.getTime();
+            
+            // Se a data já passou este ano, mostra para o ano que vem
+            if (targetDate < now) {
+                const nextYear = events[currentTabIndex].date.getFullYear() + 1;
+                events[currentTabIndex].date.setFullYear(nextYear);
+                targetDate = events[currentTabIndex].date.getTime();
+            }
+
+            const diff = targetDate - now;
+
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('days').innerText = d.toString().padStart(2, '0');
+            document.getElementById('hours').innerText = h.toString().padStart(2, '0');
+            document.getElementById('minutes').innerText = m.toString().padStart(2, '0');
+            document.getElementById('seconds').innerText = s.toString().padStart(2, '0');
+        }
+
+        function changeTab(index) {
+            // Atualiza o índice
+            currentTabIndex = index;
+            
+            // Atualiza o título
+            document.getElementById('event-title').innerText = events[index].title;
+
+            // Atualiza o visual das abas
+            for (let i = 0; i < events.length; i++) {
+                const btn = document.getElementById(`btn-${i}`);
+                if (i === index) {
+                    btn.classList.add('tab-active');
+                } else {
+                    btn.classList.remove('tab-active');
+                }
+            }
+
+            // Reinicia o cálculo imediatamente
+            updateCountdown();
+        }
+
+        // Inicialização
+        window.onload = () => {
+            changeTab(0);
+            timerInterval = setInterval(updateCountdown, 1000);
+        };
+    </script>
+</body>
+</html>
